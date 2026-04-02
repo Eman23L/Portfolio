@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Digital Builder | Wealth & Human Performance Architect</title>
+    <link rel="icon" type="image/jpeg" href="images/YTlogo.jpg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Load 3D Model Viewer -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+</head>
+<body>
+
+    <!-- Dream Entrance Preloader -->
+    <div id="preloader">
+        <div class="loader-logo"></div>
+    </div>
+
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo" id="nav-logo">Loading...</a>
+                
+                <div class="nav-links">
+                    <a href="#" onclick="showAboutPage(); return false;">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                        <span>About Me</span>
+                    </a>
+                    <div class="nav-item-dropdown">
+                        <a href="javascript:void(0)" class="nav-link-trigger" onclick="goHomeAndScroll('expertise')">
+                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                            <span>Expertise</span>
+                            <svg class="dropdown-arrow" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </a>
+                        <div class="dropdown-menu" id="desktop-expertise-menu"></div>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <div id="desktop-header-actions" class="desktop-header-actions"></div>
+                    <!-- Hamburger Button (Mobile Only) -->
+                    <button class="hamburger" id="hamburger-btn" aria-label="Menu">
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Mobile Slide-over Menu -->
+    <div id="mobile-menu" class="mobile-menu">
+        <div class="mobile-menu-inner">
+            <div class="mobile-menu-section">
+                <p class="menu-label">Profile & Content</p>
+                <div id="mobile-profile-links"></div>
+            </div>
+            <div class="mobile-menu-section">
+                <p class="menu-label">Key Focus Areas</p>
+                <div id="mobile-categories-list"></div>
+            </div>
+        </div>
+        <div id="mobile-fixed-utility" class="mobile-menu-fixed-bottom"></div>
+    </div>
+
+    <main id="main-content">
+        <!-- Home View -->
+        <div id="home-view">
+            <section id="about" class="hero">
+                <div class="container" id="hero-content"></div>
+            </section>
+
+            <!-- New Metrics Section -->
+            <section id="metrics" class="container">
+                <h2 class="reveal">My Impact in Numbers</h2>
+                <div class="metrics-grid" id="metrics-grid">
+                    <!-- Metrics will be rendered here by JavaScript -->
+                </div>
+            </section>
+            <section id="expertise" class="container">
+                <h2 class="reveal">Key Focus Areas</h2>
+                <div class="projects-grid" id="projects-grid"></div>
+            </section>
+        </div>
+
+        <!-- Page View (Hidden by default) -->
+        <div id="page-view" class="container" style="display: none;">
+            <nav class="breadcrumbs" id="breadcrumbs"></nav>
+            <div id="page-body" class="page-content-area"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p id="footer-text"></p>
+    </footer>
+
+    <!-- Floating Action Buttons -->
+    <div class="fab-container">
+        <button id="floating-contact-btn" class="floating-btn contact-btn" title="Contact Me" onclick="showContactPage()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        </button>
+        <button id="back-to-top-btn" class="floating-btn top-btn" title="Back to Top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        </button>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contact-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeContactModal()">&times;</span>
+            <div id="contact-modal-body"></div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

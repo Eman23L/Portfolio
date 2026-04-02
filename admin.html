@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | The Digital Builder</title>
+    <link rel="icon" type="image/jpeg" href="images/YTlogo.jpg">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Admin Specific Overrides */
+        body { background-color: #f3f4f6; }
+        .admin-container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
+        
+        .admin-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #fff; padding: 20px 30px; border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px;
+        }
+        .admin-title { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+        .logout-btn { background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+
+        .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
+        
+        .panel {
+            background: #fff; border-radius: 12px; padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .panel h2 { margin-bottom: 20px; font-size: 1.2rem; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+
+        /* Data Tables */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .data-table th { text-align: left; padding: 12px; background: #f9fafb; color: #666; font-weight: 600; }
+        .data-table td { padding: 12px; border-bottom: 1px solid #eee; color: #333; vertical-align: top; }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover { background: #f8f9fa; }
+
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+        .badge-blue { background: #e0f2fe; color: #0369a1; }
+        .badge-gray { background: #f3f4f6; color: #4b5563; }
+
+        /* Login Modal */
+        #login-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center;
+            z-index: 2000;
+        }
+        .login-box {
+            background: white; padding: 40px; border-radius: 12px; width: 100%; max-width: 400px;
+            text-align: center;
+        }
+        .login-box input {
+            width: 100%; padding: 12px; margin: 20px 0; border: 1px solid #ddd; border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login Overlay -->
+    <div id="login-modal">
+        <div class="login-box">
+            <h2>Admin Access</h2>
+            <p>Please enter your admin secret key.</p>
+            <form id="login-form">
+                <input type="password" id="admin-secret" placeholder="Enter Secret Key" required>
+                <button type="submit" class="btn" style="width: 100%;">Unlock Dashboard</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" style="display: none;">
+        <div class="admin-container">
+            <header class="admin-header">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div class="admin-title">The Digital Builder | Admin</div>
+                    <a href="index.html" style="font-size:0.9rem; color:#666; text-decoration:none;">&larr; Back to Site</a>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- Contact Messages -->
+                <div class="panel">
+                    <h2>Recent Contact Messages</h2>
+                    <div style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">ID</th>
+                                    <th style="width: 150px;">Name</th>
+                                    <th style="width: 200px;">Subject</th>
+                                    <th>Message</th>
+                                    <th style="width: 150px;">Email</th>
+                                </tr>
+                            </thead>
+                            <tbody id="messages-body">
+                                <tr><td colspan="5">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Visitor Logs -->
+                <div class="panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:20px;">
+                        <h2 style="border:none; padding:0; margin:0;">Visitor Traffic <span id="visitor-count" style="font-size:0.9rem; color:#666; font-weight:400; margin-left:10px;"></span></h2>
+                        <label style="font-size:0.9rem; cursor:pointer; user-select:none; display:flex; align-items:center; gap:8px;">
+                            <input type="checkbox" id="unique-toggle" onchange="renderVisitors()"> 
+                            <strong>Unique IPs Only</strong>
+                        </label>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; background: #f9fafb; padding: 15px; border-radius: 8px;">
+                        <input type="text" id="filter-ip" placeholder="Filter by IP..." onkeyup="renderVisitors()" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                        <input type="text" id="filter-page" placeholder="Filter by Page..." onkeyup="renderVisitors()" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                        <input type="date" id="filter-date" onchange="renderVisitors()" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; color: #666;">
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>IP Address</th>
+                                    <th>Page Visited</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="visitors-body">
+                                <tr><td colspan="4">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        // Matches the endpoints in your script.js
+        const API_ENDPOINTS = [
+            'https://djry.myqnapcloud.com:12', 
+            'http://localhost:3000'
+        ];
+
+        let activeApiBase = '';
+        let adminSecret = '';
+
+        // --- AUTH LOGIC ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedSecret = sessionStorage.getItem('admin_secret');
+            if (storedSecret) {
+                verifyAndLoad(storedSecret);
+            }
+        });
+
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const secret = document.getElementById('admin-secret').value;
+            verifyAndLoad(secret);
+        });
+
+        function logout() {
+            sessionStorage.removeItem('admin_secret');
+            window.location.reload();
+        }
+
+        async function verifyAndLoad(secret) {
+            adminSecret = secret;
+            
+            // Try to find working API and fetch data
+            try {
+                await findActiveApi();
+                document.getElementById('login-modal').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                sessionStorage.setItem('admin_secret', secret);
+                
+                fetchMessages();
+                fetchVisitors();
+            } catch (err) {
+                alert('Connection failed or Invalid Secret. Please check your network or key.');
+                console.error(err);
+                sessionStorage.removeItem('admin_secret');
+            }
+        }
+
+        // --- API LOGIC ---
+        async function findActiveApi() {
+            for (const base of API_ENDPOINTS) {
+                try {
+                    // We try to hit the admin endpoint directly to verify auth + connection
+                    const res = await fetch(`${base}/admin/visitors`, {
+                        headers: { 'x-admin-secret': adminSecret }
+                    });
+                    if (res.status === 401) throw new Error('Unauthorized');
+                    if (res.ok) {
+                        activeApiBase = base;
+                        return;
+                    }
+                } catch (e) {
+                    console.warn(`Failed to connect to ${base}:`, e);
+                    if (e.message === 'Unauthorized') throw e;
+                }
+            }
+            throw new Error('No API reachable');
+        }
+
+        async function fetchData(endpoint) {
+            const res = await fetch(`${activeApiBase}${endpoint}`, {
+                headers: { 'x-admin-secret': adminSecret }
+            });
+            return await res.json();
+        }
+
+        // --- RENDER LOGIC ---
+        async function fetchMessages() {
+            const tbody = document.getElementById('messages-body');
+            try {
+                const data = await fetchData('/admin/messages');
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">No messages found.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.map(msg => `
+                    <tr>
+                        <td><span class="badge badge-gray">#${msg.id || '?'}</span></td>
+                        <td><strong>${msg.name}</strong></td>
+                        <td>${msg.subject}</td>
+                        <td>${msg.message}</td>
+                        <td><a href="mailto:${msg.email}">${msg.email}</a></td>
+                    </tr>
+                `).join('');
+            } catch (err) { tbody.innerHTML = `<tr><td colspan="5" style="color:red">Error loading messages.</td></tr>`; }
+        }
+
+        let visitorsCache = [];
+
+        async function fetchVisitors() {
+            const tbody = document.getElementById('visitors-body');
+            try {
+                visitorsCache = await fetchData('/admin/visitors');
+                renderVisitors();
+            } catch (err) { tbody.innerHTML = `<tr><td colspan="4" style="color:red">Error loading visitors.</td></tr>`; }
+        }
+
+        function renderVisitors() {
+            const tbody = document.getElementById('visitors-body');
+            const uniqueOnly = document.getElementById('unique-toggle').checked;
+            const filterIp = document.getElementById('filter-ip').value.toLowerCase();
+            const filterPage = document.getElementById('filter-page').value.toLowerCase();
+            const filterDate = document.getElementById('filter-date').value;
+            
+            let data = visitorsCache;
+
+            // 1. Apply Text & Date Filters
+            data = data.filter(v => {
+                const ipMatch = (v.IP || '').toLowerCase().includes(filterIp);
+                const pageMatch = (v.page || '').toLowerCase().includes(filterPage);
+                let dateMatch = true;
+                if (filterDate) {
+                    if (!v.date) dateMatch = false;
+                    else {
+                        try { dateMatch = new Date(v.date).toISOString().split('T')[0] === filterDate; } 
+                        catch (e) { dateMatch = false; }
+                    }
+                }
+                return ipMatch && pageMatch && dateMatch;
+            });
+
+            // 2. Apply Unique Filter
+            if (uniqueOnly) {
+                const seen = new Set();
+                data = data.filter(v => {
+                    if (seen.has(v.IP)) return false;
+                    seen.add(v.IP);
+                    return true;
+                });
+            }
+
+            // Update Count
+            document.getElementById('visitor-count').textContent = `(${data.length} records)`;
+
+            if (!data.length) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:15px;">No records found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(v => `
+                    <tr>
+                        <td><span class="badge badge-gray">#${v.id || '?'}</span></td>
+                        <td><span class="badge badge-blue">${v.IP}</span></td>
+                        <td>${v.page}</td>
+                        <td>${v.date ? new Date(v.date).toLocaleString() : 'N/A'}</td>
+                    </tr>
+                `).join('');
+        }
+    </script>
+</body>
+</html>
